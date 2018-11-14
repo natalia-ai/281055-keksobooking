@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Наталья Иванова](https://up.htmlacademy.ru/javascript/16/user/281055).
-* Наставник: `Неизвестно`.
+* Наставник: [Андрей Рыжаков](https://htmlacademy.ru/profile/id201015).
 
 ---
 
