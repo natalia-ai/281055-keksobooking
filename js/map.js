@@ -1,3 +1,4 @@
+'use strict'
 var N_ElEMENT = 8;
 var MAP_WIDTH = 1150;
 var MAP_HEIGHT_MIN = 130;
@@ -7,27 +8,27 @@ var PIN_HEIGTH = 70;
 var CARD_IMG_WIDTH = 45;
 var CARD_IMG_HEIGTH = 40;
 
-var titles = ["Большая уютная квартира", "Маленькая неуютная квартира", "Огромный прекрасный дворец", "Маленький ужасный дворец", "Красивый гостевой домик", "Некрасивый негостеприимный домик", "Уютное бунгало далеко от моря", "Неуютное бунгало по колено в воде"];
-var types = ["palace", "flat", "house", "bungalo"];
-var times = ["12:00", "13:00", "14:00"];
-var features = ["wifi", "dishwasher", "parking", "washer", "elevator", "conditioner"];
-var photos = ["http://o0.github.io/assets/images/tokyo/hotel1.jpg", "http://o0.github.io/assets/images/tokyo/hotel2.jpg", "http://o0.github.io/assets/images/tokyo/hotel3.jpg"];
+var titles = ['Большая уютная квартира', 'Маленькая неуютная квартира', 'Огромный прекрасный дворец', 'Маленький ужасный дворец', 'Красивый гостевой домик', 'Некрасивый негостеприимный домик', 'Уютное бунгало далеко от моря', 'Неуютное бунгало по колено в воде'];
+var types = ['palace', 'flat', 'house', 'bungalo'];
+var times = ['12:00', '13:00', '14:00'];
+var features = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
+var photos = ['http://o0.github.io/assets/images/tokyo/hotel1.jpg', 'http://o0.github.io/assets/images/tokyo/hotel2.jpg', 'http://o0.github.io/assets/images/tokyo/hotel3.jpg'];
 
 var typeMap = {
-  "palace": 'Дворец',
-  "house": 'Дом',
-  "flat": 'Квартира',
-  "bungalo": 'Бунгало'
+  'palace': 'Дворец',
+  'house': 'Дом',
+  'flat': 'Квартира',
+  'bungalo': 'Бунгало',
 };
 
 var map = document.querySelector('.map');
-var pinsContainer = document.querySelector('.map__pins'); // pinsContainer, pinsBox
+var pinsContainer = document.querySelector('.map__pins');
 var mapPinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
 var cardsContainer = document.querySelector('.map');
 var mapCardTemplate = document.querySelector('#card').content.querySelector('.map__card');
 
 var randomInteger = function (min, max) {
-  var rand = min - 0.5 + Math.random() * (max - min + 1)
+  var rand = min - 0.5 + Math.random() * (max - min + 1);
   rand = Math.round(rand);
   return rand;
 }
@@ -52,7 +53,7 @@ var makeObject = function (N_ELEMENT) {
     objectTemplate.offer = {};
     objectTemplate.location = {};
 
-    objectTemplate.author.avatar = "img/avatars/user0" + (i + 1) + ".png";
+    objectTemplate.author.avatar = 'img/avatars/user0' + (i + 1) + '.png';
     objectTemplate.offer.title = titles[randomInteger(0, titles.length - 1)];
     objectTemplate.offer.address = randomInteger(0, 1000) + ', ' + randomInteger(0, 1000);
     objectTemplate.offer.price = randomInteger(1000, 1000000);
@@ -62,7 +63,7 @@ var makeObject = function (N_ELEMENT) {
     objectTemplate.offer.checkin = times[randomInteger(0, times.length - 1)];
     objectTemplate.offer.checkout = times[randomInteger(0, times.length - 1)];
     objectTemplate.offer.features = getSortArr(features).slice(randomInteger(0, features.length - 1));
-    objectTemplate.offer.description = "";
+    objectTemplate.offer.description = '';
     objectTemplate.offer.photos = getSortArr(photos);
     objectTemplate.location.x = randomInteger(0, MAP_WIDTH);
     objectTemplate.location.y = randomInteger(MAP_HEIGHT_MIN, MAP_HEIGHT_MAX);
