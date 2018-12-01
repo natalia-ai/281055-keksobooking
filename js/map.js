@@ -34,8 +34,8 @@ var selectMapFiltersList = mapFiltersForm.querySelectorAll('select');
 var pinMain = document.querySelector('.map__pin--main');
 var pinMainAddress = document.querySelector('#address');
 var mapPin = document.querySelectorAll('.map__pin');
-var popup = document.querySelector('.popap');
-var closePopupButton = document.querySelector('.popup__close');
+var popup = cardsContainer.querySelector('article');
+var popupCloseButton = document.querySelector('.popup__close');
 var buttonsInMapPins = document.querySelectorAll('.map__pins button[type ="button"]');
 
 var randomInteger = function (min, max) {
@@ -171,6 +171,12 @@ var onPinMainClick = function () {
 
 pinMain.addEventListener('click', onPinMainClick);
 
+pinMain.addEventListener('keydown', function (evt) {
+  if (evt.keyCode === 13) {
+     popup.parentNode.removeChild(popup);
+   }
+});
+
 var onPinMainMouseup = function (evt) {
   pinMainAddress.value = evt.clientX + ', ' + evt.clientY;
 }
@@ -204,19 +210,25 @@ var onPinMapClick = function (evt) {
 }
 pinsContainer.addEventListener('click', onPinMapClick);
 
-var onPopupCloseClick = function (evt) {
-  var targetCard = evt.target;
-  var activeTargetCard = targetCard.closest('ARTICLE');
-  if (activeTargetCard) {
-    activeTargetCard.remove(cardsContainer);
-  };
-};
-cardsContainer.addEventListener('click', onPopupCloseClick);
+//cardsContainer.addEventListener('click', function () {
+  //cardsContainer.removeChild(popup);
+//});
+//popupCloseButton.addEventListener('click', function () {
+   // popup.style.display = 'none';
+   // popup.parentNode.removeChild(popup);
+    //document.classList.remove('popup');
 
-document.addEventListener('keydown', function (evt) {
-  if (evt.keyCode === 27) {
-    document.classList.remove('popup');
-  }
-});
+//});
+//popupCloseButton.addEventListener('click', function () {
+//  cardsContainer.parentNode.removeChild(cardsContainer);
+//});
+
+//popupCloseButton.addEventListener('keydown', function (evt) {
+  //if (evt.keyCode === 27) {
+   // popup.style.display = 'none';
+   // popup.parentNode.removeChild(popup);
+    //document.classList.remove('popup');
+ // }
+//});
 
 
