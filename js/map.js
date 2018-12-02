@@ -118,6 +118,7 @@ function showPopUp(data) {
   }
   if(currentCard) {
     closePopUp();
+
   }
   var card = createCard(data);
   currentCard = card;
@@ -126,6 +127,7 @@ function showPopUp(data) {
 
 function closePopUp() {
   currentCard.remove();
+  currentCard = null;
 }
 function removePins() {
   renderedPins.forEach(function(item) {
@@ -229,7 +231,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
     x: pinMain.style.left,
     y: pinMain.style.top
   }
-  adForm.address.readonly = true;
+  adForm.address.readOnly = true;
   adForm.addEventListener('changeAddress', setAddressHandler);
   adForm.addEventListener('reset', function() {
     deactivatePage();
