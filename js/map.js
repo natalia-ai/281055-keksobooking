@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 var N_ElEMENT = 8;
 var MAP_WIDTH = 1150;
 var MAP_HEIGHT_MIN = 130;
@@ -7,33 +7,38 @@ var PIN_WIDTH = 50;
 var PIN_HEIGTH = 70;
 var CARD_IMG_WIDTH = 45;
 var CARD_IMG_HEIGTH = 40;
+var MODIFY = 20;
 
 var titles = ['Большая уютная квартира', 'Маленькая неуютная квартира', 'Огромный прекрасный дворец', 'Маленький ужасный дворец', 'Красивый гостевой домик', 'Некрасивый негостеприимный домик', 'Уютное бунгало далеко от моря', 'Неуютное бунгало по колено в воде'];
 var types = ['palace', 'flat', 'house', 'bungalo'];
 var times = ['12:00', '13:00', '14:00'];
 var features = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
 var photos = ['http://o0.github.io/assets/images/tokyo/hotel1.jpg', 'http://o0.github.io/assets/images/tokyo/hotel2.jpg', 'http://o0.github.io/assets/images/tokyo/hotel3.jpg'];
-
 var typeMap = {
   'palace': 'Дворец',
   'house': 'Дом',
   'flat': 'Квартира',
   'bungalo': 'Бунгало',
 };
+var currentCard = null;
+var defaultCoords = null;
+var renderedPins = [];
 
-var map = document.querySelector('.map');
 var pinsContainer = document.querySelector('.map__pins');
 var mapPinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
-var cardsContainer = document.querySelector('.map');
+var map = document.querySelector('.map');
 var mapCardTemplate = document.querySelector('#card').content.querySelector('.map__card');
+var adForm = document.querySelector('.ad-form');
+var fieldsetAdList = Array.from(adForm.querySelectorAll('fieldset'));
+var pinMain = document.querySelector('.map__pin--main');
 
-var randomInteger = function (min, max) {
+function randomInteger(min, max) {
   var rand = min - 0.5 + Math.random() * (max - min + 1);
   rand = Math.round(rand);
   return rand;
 }
 
-var getSortArr = function (arr) {
+function getSortArr(arr) {
   var data = arr.slice();
   var length = data.length;
   for (var i = 0; i < length; i++) {
@@ -45,7 +50,7 @@ var getSortArr = function (arr) {
   return data;
 }
 
-var makeObject = function (N_ELEMENT) {
+function makeObject(N_ELEMENT) {
   var objectArray = Array(N_ELEMENT);
   for (var i = 0; i < N_ELEMENT; i++) {
     var objectTemplate = {};
@@ -67,15 +72,12 @@ var makeObject = function (N_ELEMENT) {
     objectTemplate.offer.photos = getSortArr(photos);
     objectTemplate.location.x = randomInteger(0, MAP_WIDTH);
     objectTemplate.location.y = randomInteger(MAP_HEIGHT_MIN, MAP_HEIGHT_MAX);
-
     objectArray[i] = objectTemplate;
   }
   return objectArray;
 }
 
-map.classList.remove('map--faded');
-
-var createPin = function (data) {
+function createPin(data) {
   var pinTemplate = mapPinTemplate.cloneNode(true);
   pinTemplate.style.left = data.location.x - PIN_WIDTH / 2 + 'px';
   pinTemplate.style.top = data.location.y - PIN_HEIGTH + 'px';
@@ -85,17 +87,47 @@ var createPin = function (data) {
   return pinTemplate;
 }
 
-var renderPins = function (data) {
+function renderPins(data) {
   var fragment = document.createDocumentFragment();
   data.forEach(function (item) {
     var pin = createPin(item);
+    pin.addEventListener('click', function (event) {
+      event.preventDefault();
+      showPopUp(item);
+    });
+    renderedPins.push(pin);
     fragment.appendChild(pin);
   });
   pinsContainer.appendChild(fragment);
 }
 
-var createCard = function (card) {
+function showPopUp(data) {
+  var card = createCard(data);
+  if (currentCard && currentCard.querySelector('.popup__text--address').textContent === card.querySelector('.popup__text--address').textContent) {
+    return;
+  }
+  if (currentCard) {
+    closePopUp();
+  }
+  currentCard = card;
+  map.insertBefore(card, map.lastElementChild);
+}
+
+function closePopUp() {
+  currentCard.remove();
+  currentCard = null;
+}
+
+function removePins() {
+  renderedPins.forEach(function (item) {
+    item.remove();
+  });
+  renderedPins = [];
+}
+
+function createCard(card) {
   var cardTemplate = mapCardTemplate.cloneNode(true);
+  cardTemplate.querySelector('.popup__avatar').src = card.author.avatar;
   var titleCard = cardTemplate.querySelector('.popup__title');
   titleCard.textContent = card.offer.title;
   var addressCard = cardTemplate.querySelector('.popup__text--address');
@@ -129,10 +161,69 @@ var createCard = function (card) {
     imgTag.style.height = CARD_IMG_HEIGTH + 'px';
     photosCard.appendChild(imgTag);
   });
+  cardTemplate.querySelector('.popup__close').addEventListener('click', function (event) {
+    event.preventDefault();
+    closePopUp();
+  });
   return cardTemplate;
 }
 
-var objectArray = makeObject(N_ElEMENT);
-renderPins(objectArray);
+var changeAddress = new Event('changeAddress', {bubbles: true, cancelable: true});
 
-cardsContainer.insertBefore(createCard(objectArray[0]), cardsContainer.lastElementChild);
+var getAddress = function (label, modify) {
+  var x = label.offsetLeft + label.offsetWidth / 2;
+  var y = modify ? label.offsetTop + label.offsetHeight + modify : label.offsetTop + label.offsetHeight / 2;
+  return {
+    x: x,
+    y: y
+  };
+};
+
+function setAddressHandler(event) {
+  adForm.address.value = event.coords.x + ', ' + event.coords.y;
+}
+
+function activePageHandler() {
+  renderPins(makeObject(N_ElEMENT));
+  changeAddress.coords = getAddress(pinMain, MODIFY);
+  adForm.dispatchEvent(changeAddress);
+  map.classList.remove('map--faded');
+  adForm.classList.remove('ad-form--disabled');
+  fieldsetAdList.forEach(function (item) {
+    item.disabled = false;
+  });
+  pinMain.removeEventListener('mouseup', activePageHandler);
+}
+
+function deactivatePage() {
+  removePins();
+  pinMain.style.left = defaultCoords.x;
+  pinMain.style.top = defaultCoords.y;
+
+  setTimeout(function () {
+    changeAddress.coords = getAddress(pinMain);
+    adForm.dispatchEvent(changeAddress);
+  }, 200);
+
+  map.classList.add('map--faded');
+  adForm.classList.add('ad-form--disabled');
+  fieldsetAdList.forEach(function (item) {
+    item.disabled = true;
+  });
+
+  pinMain.addEventListener('mouseup', activePageHandler);
+}
+
+document.addEventListener('DOMContentLoaded', function (event) {
+  event.preventDefault();
+  defaultCoords = {
+    x: pinMain.style.left,
+    y: pinMain.style.top
+  };
+  adForm.address.readOnly = true;
+  adForm.addEventListener('changeAddress', setAddressHandler);
+  adForm.addEventListener('reset', function () {
+    deactivatePage();
+  });
+  deactivatePage();
+});
