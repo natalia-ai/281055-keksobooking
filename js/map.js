@@ -1,5 +1,6 @@
 'use strict';
-var N_ElEMENT = 8;
+var MODIFY = 20;
+var ELEMENT_N = 8;
 var MAP_WIDTH = 1150;
 var MAP_HEIGHT_MIN = 130;
 var MAP_HEIGHT_MAX = 630;
@@ -7,7 +8,7 @@ var PIN_WIDTH = 50;
 var PIN_HEIGTH = 70;
 var CARD_IMG_WIDTH = 45;
 var CARD_IMG_HEIGTH = 40;
-var MODIFY = 20;
+
 var MAX_PRICE = 1000000;
 
 var titles = ['Большая уютная квартира', 'Маленькая неуютная квартира', 'Огромный прекрасный дворец', 'Маленький ужасный дворец', 'Красивый гостевой домик', 'Некрасивый негостеприимный домик', 'Уютное бунгало далеко от моря', 'Неуютное бунгало по колено в воде'];
@@ -69,9 +70,9 @@ function getSortArr(arr) {
   return data;
 }
 
-function makeObject(N_ELEMENT) {
-  var objectArray = Array(N_ELEMENT);
-  for (var i = 0; i < N_ELEMENT; i++) {
+function makeObject() {
+  var objectArray = Array(ELEMENT_N);
+  for (var i = 0; i < ELEMENT_N; i++) {
     var objectTemplate = {};
     objectTemplate.author = {};
     objectTemplate.offer = {};
@@ -281,7 +282,7 @@ function formSubmitHandler(event) {
   }
 }
 function pageActivateHandler() {
-  renderPins(makeObject(N_ElEMENT));
+  renderPins(makeObject(ELEMENT_N));
   changeAddress.coords = getAddress(pinMain, MODIFY);
   adForm.dispatchEvent(changeAddress);
   map.classList.remove('map--faded');
