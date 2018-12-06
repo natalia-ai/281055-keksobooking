@@ -37,7 +37,6 @@ var OptionMapping = {
 };
 
 var valid = true;
-//var errorForm = null;
 var currentCard = null;
 var defaultCoords = null;
 var renderedPins = [];
@@ -49,9 +48,6 @@ var mapCardTemplate = document.querySelector('#card').content.querySelector('.ma
 var adForm = document.querySelector('.ad-form');
 var fieldsetAdList = Array.from(adForm.querySelectorAll('fieldset'));
 var pinMain = document.querySelector('.map__pin--main');
-//var successFormTemplate = document.querySelector('#success').content.querySelector('.success');
-//var errorFormTemplate = document.querySelector('#error').content.querySelector('.error');
-//var mainTag = document.querySelector('main');
 var rooms = adForm.rooms;
 var guests = adForm.capacity;
 
@@ -255,18 +251,6 @@ function roomsAndGuestBindHandler(roomsSelect, guestsSelect) {
   };
 }
 
-/*function showSuccessForm() {
-  var successForm = successFormTemplate.cloneNode(true);
-  mainTag.appendChild(successForm);
-  return successForm;
-}*/
-
-/*function showErrorForm() {
-  errorForm = errorFormTemplate.cloneNode(true);
-  mainTag.appendChild(errorForm);
-  return errorForm;
-}*/
-
 function formSubmitHandler(event) {
   event.preventDefault();
   var errors = Array.from(adForm.querySelectorAll('.errorField'));
@@ -294,14 +278,8 @@ function formSubmitHandler(event) {
   }
   if (valid) {
     adForm.submit();
-    if (adForm.submit()) {
-      /*showSuccessForm();
-    } else {
-      showErrorForm();*/
-    }
   }
 }
-
 function pageActivateHandler() {
   renderPins(makeObject(N_ElEMENT));
   changeAddress.coords = getAddress(pinMain, MODIFY);
