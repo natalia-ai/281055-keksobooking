@@ -182,7 +182,7 @@ function createCard(card) {
   return cardTemplate;
 }
 
-var changeAddress = new Event('changeAddress', {bubbles: true, cancelable: true});
+var changeAddress = new Event('changeAddress', { bubbles: true, cancelable: true });
 
 var getAddress = function (label, modify) {
   var x = label.offsetLeft + label.offsetWidth / 2;
@@ -193,7 +193,7 @@ var getAddress = function (label, modify) {
   };
 };
 
-function setAddressHandler(event) {
+function addressSetHandler(event) {
   adForm.address.value = event.coords.x + ', ' + event.coords.y;
 }
 
@@ -281,6 +281,61 @@ function formSubmitHandler(event) {
     adForm.submit();
   }
 }
+
+function mouseDownHandler(event) {
+  event.preventDefault();
+  var pinMainCoords = getCoords(pinMain);
+  var shiftX = event.clientX - pinMainCoords.left;
+  var shiftY = event.clientY - pinMainCoords.top;
+
+  pinMain.addEventListener('mousemove', mouseMoveHandler);
+  pinMain.addEventListener('mouseup', mouseUpHandler);
+
+  var mapCoords = getCoords(map);
+  function mouseMoveHandler(moveEvent) {
+    moveEvent.preventDefault();
+    var newLeft = moveEvent.clientX - shiftX - mapCoords.left;
+    var newTop = moveEvent.clientY - shiftY - mapCoords.top;
+
+    if (newLeft < (-PIN_WIDTH / 2)) {
+      newLeft = (-PIN_WIDTH / 2);
+    }
+    var rightEdge = map.offsetWidth - pinMain.offsetWidth / 1.5;
+
+    if (newTop < 0) {
+      newTop = 0;
+    }
+    var bottomEdge = map.offsetHeight - pinMain.offsetHeight * 1.3;
+
+    if (newLeft > rightEdge) {
+      newLeft = rightEdge;
+    }
+    pinMain.style.left = newLeft + 'px';
+
+    if (newTop > bottomEdge) {
+      newTop = bottomEdge;
+    }
+    pinMain.style.top = newTop + 'px';
+  }
+  function mouseUpHandler(upEvent) {
+    upEvent.preventDefault();
+    pinMain.removeEventListener('mousemove', mouseMoveHandler);
+    pinMain.removeEventListener('mouseup', mouseUpHandler);
+    changeAddress.coords = getAddress(pinMain, MODIFY);
+    -++-adForm.dispatchEvent(changeAddress);
+  }
+  return false;
+}
+
+function getCoords(elem) {
+  var box = elem.getBoundingClientRect();
+
+  return {
+    top: box.top + pageYOffset,
+    left: box.left + pageXOffset
+  };
+}
+
 function pageActivateHandler() {
   renderPins(makeObject(ELEMENT_N));
   changeAddress.coords = getAddress(pinMain, MODIFY);
@@ -290,6 +345,7 @@ function pageActivateHandler() {
   fieldsetAdList.forEach(function (item) {
     item.disabled = false;
   });
+
   pinMain.removeEventListener('mouseup', pageActivateHandler);
   adForm.timeout.addEventListener('change', timeOutChangeHandler);
   adForm.timein.addEventListener('change', timeInChangeHandler);
@@ -314,10 +370,12 @@ function deactivatePage() {
     item.disabled = true;
   });
 
-  pinMain.addEventListener('mouseup', pageActivateHandler);
+  pinMain.addEventListener('mouseup', pageActivateHandler); // если document.addEventListener, то координаты в поле координат меняются столько же раз сколько передвигаем и отпускаем пин, но плодятся пины арендодателей.
+  //если pinMain.addEventListener, то координаты меняются только после первого перемещения метки.
   adForm.timeout.addEventListener('change', timeOutChangeHandler);
   adForm.timein.addEventListener('change', timeInChangeHandler);
   adForm.addEventListener('submit', formSubmitHandler);
+  pinMain.addEventListener('mousedown', mouseDownHandler);
 }
 
 document.addEventListener('DOMContentLoaded', function (event) {
@@ -327,7 +385,7 @@ document.addEventListener('DOMContentLoaded', function (event) {
     y: pinMain.style.top
   };
   adForm.address.readOnly = true;
-  adForm.addEventListener('changeAddress', setAddressHandler);
+  adForm.addEventListener('changeAddress', addressSetHandler);
   adForm.addEventListener('reset', function () {
     deactivatePage();
   });
