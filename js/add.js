@@ -1,9 +1,29 @@
 'use strict';
+
 (function () {
+  var PIN_WIDTH = 50;
+  var PIN_HEIGTH = 70;
+  var CARD_IMG_WIDTH = 45;
+  var CARD_IMG_HEIGTH = 40;
+
+  var TypeMap = {
+    'palace': 'Дворец',
+    'house': 'Дом',
+    'flat': 'Квартира',
+    'bungalo': 'Бунгало',
+  };
+
+  var currentCard = null;
+  var renderedPins = [];
+  var pinsContainer = document.querySelector('.map__pins');
+  var mapPinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
+  var map = document.querySelector('.map');
+  var mapCardTemplate = document.querySelector('#card').content.querySelector('.map__card');
+
   function createPin(data) {
-    var pinTemplate = window.data.mapPinTemplate.cloneNode(true);
-    pinTemplate.style.left = data.location.x - window.data.PIN_WIDTH / 2 + 'px';
-    pinTemplate.style.top = data.location.y - window.data.PIN_HEIGTH + 'px';
+    var pinTemplate = mapPinTemplate.cloneNode(true);
+    pinTemplate.style.left = data.location.x - PIN_WIDTH / 2 + 'px';
+    pinTemplate.style.top = data.location.y - PIN_HEIGTH + 'px';
     var avatarPin = pinTemplate.querySelector('img');
     avatarPin.src = data.author.avatar;
     avatarPin.alt = data.offer.title;
@@ -18,43 +38,43 @@
         event.preventDefault();
         showPopUp(item);
       });
-      window.data.renderedPins.push(pin);
+      renderedPins.push(pin);
       fragment.appendChild(pin);
     });
-    window.data.pinsContainer.appendChild(fragment);
+    pinsContainer.appendChild(fragment);
   }
 
   function showPopUp(data) {
     var card = createCard(data);
-    if (window.data.currentCard && window.data.currentCard.querySelector('.popup__text--address').textContent === card.querySelector('.popup__text--address').textContent) {
+    if (currentCard && currentCard.querySelector('.popup__text--address').textContent === card.querySelector('.popup__text--address').textContent) {
       return;
     }
-    if (window.data.currentCard) {
+    if (currentCard) {
       closePopUp();
     }
-    window.data.currentCard = card;
-    window.data.map.insertBefore(card, window.data.map.lastElementChild);
+    currentCard = card;
+    map.insertBefore(card, map.lastElementChild);
   }
 
   function closePopUp() {
-    window.data.currentCard.remove();
-    window.data.currentCard = null;
+    currentCard.remove();
+    currentCard = null;
   }
 
   function removePins() {
-    window.data.renderedPins.forEach(function (item) {
+    renderedPins.forEach(function (item) {
       item.remove();
     });
-    window.data.renderedPins = [];
+    renderedPins = [];
   }
 
   function createCard(card) {
-    var cardTemplate = window.data.mapCardTemplate.cloneNode(true);
+    var cardTemplate = mapCardTemplate.cloneNode(true);
     cardTemplate.querySelector('.popup__avatar').src = card.author.avatar;
     cardTemplate.querySelector('.popup__title').textContent = card.offer.title;
     cardTemplate.querySelector('.popup__text--address').textContent = card.offer.address;
     cardTemplate.querySelector('.popup__text--price').textContent = card.offer.price + ' ₽/ночь';
-    cardTemplate.querySelector('.popup__type').textContent = window.data.TypeMap[card.offer.type];
+    cardTemplate.querySelector('.popup__type').textContent = TypeMap[card.offer.type];
     cardTemplate.querySelector('.popup__text--capacity').textContent = card.offer.rooms + ' комнаты для ' + card.offer.guests + ' гостей';
     cardTemplate.querySelector('.popup__text--time').textContent = 'Заезд после ' + card.offer.checkin + ' выезд до ' + card.offer.checkout;
     var featuresCard = cardTemplate.querySelector('.popup__features');
@@ -74,8 +94,8 @@
       imgTag.src = item;
       imgTag.alt = 'Фотография жилья';
       imgTag.classList.add('popup__photo');
-      imgTag.style.width = window.data.CARD_IMG_WIDTH + 'px';
-      imgTag.style.height = window.data.CARD_IMG_HEIGTH + 'px';
+      imgTag.style.width = CARD_IMG_WIDTH + 'px';
+      imgTag.style.height = CARD_IMG_HEIGTH + 'px';
       photosCard.appendChild(imgTag);
     });
     cardTemplate.querySelector('.popup__close').addEventListener('click', function (event) {
@@ -85,7 +105,7 @@
     return cardTemplate;
   }
 
-  window.pinsAndCards = {
+  window.add = {
     renderPins: renderPins,
     removePins: removePins,
   };

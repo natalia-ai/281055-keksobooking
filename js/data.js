@@ -1,95 +1,63 @@
 'use strict';
+
 (function () {
-  var MODIFY = 20;
+
   var ELEMENT_N = 8;
   var MAP_WIDTH = 1150;
   var MAP_HEIGHT_MIN = 130;
   var MAP_HEIGHT_MAX = 630;
-  var PIN_WIDTH = 50;
-  var PIN_HEIGTH = 70;
-  var CARD_IMG_WIDTH = 45;
-  var CARD_IMG_HEIGTH = 40;
-  var MAX_PRICE = 1000000;
-
   var titles = ['Большая уютная квартира', 'Маленькая неуютная квартира', 'Огромный прекрасный дворец', 'Маленький ужасный дворец', 'Красивый гостевой домик', 'Некрасивый негостеприимный домик', 'Уютное бунгало далеко от моря', 'Неуютное бунгало по колено в воде'];
   var types = ['palace', 'flat', 'house', 'bungalo'];
   var times = ['12:00', '13:00', '14:00'];
   var features = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
   var photos = ['http://o0.github.io/assets/images/tokyo/hotel1.jpg', 'http://o0.github.io/assets/images/tokyo/hotel2.jpg', 'http://o0.github.io/assets/images/tokyo/hotel3.jpg'];
-  var renderedPins = [];
 
-  var TypeMap = {
-    'palace': 'Дворец',
-    'house': 'Дом',
-    'flat': 'Квартира',
-    'bungalo': 'Бунгало',
-  };
+  function randomInteger(min, max) {
+    var rand = min - 0.5 + Math.random() * (max - min + 1);
+    rand = Math.round(rand);
+    return rand;
+  }
 
-  var PriceMap = {
-    'bungalo': '0',
-    'flat': '1000',
-    'house': '5000',
-    'palace': '10000',
-  };
+  function getSortArr(arr) {
+    var data = arr.slice();
+    var length = data.length;
+    for (var i = 0; i < length; i++) {
+      var index = randomInteger(0, length - 1);
+      var tmp = data[index];
+      data[index] = data[i];
+      data[i] = tmp;
+    }
+    return data;
+  }
 
-  var OptionMapping = {
-    1: [1],
-    2: [1, 2],
-    3: [1, 2, 3],
-    100: [0],
-  };
+  function makeObject() {
+    var objectArray = Array(ELEMENT_N);
+    for (var i = 0; i < ELEMENT_N; i++) {
+      var objectTemplate = {};
+      objectTemplate.author = {};
+      objectTemplate.offer = {};
+      objectTemplate.location = {};
 
-  var valid = true;
-  var currentCard = null;
-  var defaultCoords = null;
-  var error = null;
-  var pinsContainer = document.querySelector('.map__pins');
-  var mapPinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
-  var map = document.querySelector('.map');
-  var mapCardTemplate = document.querySelector('#card').content.querySelector('.map__card');
-  var adForm = document.querySelector('.ad-form');
-  var fieldsetAdList = Array.from(adForm.querySelectorAll('fieldset'));
-  var pinMain = document.querySelector('.map__pin--main');
-  var rooms = adForm.rooms;
-  var guests = adForm.capacity;
-  var mapFilters = document.querySelector('.map__filters');
+      objectTemplate.author.avatar = 'img/avatars/user0' + (i + 1) + '.png';
+      objectTemplate.offer.title = titles[randomInteger(0, titles.length - 1)];
+      objectTemplate.offer.address = randomInteger(0, 1000) + ', ' + randomInteger(0, 1000);
+      objectTemplate.offer.price = randomInteger(1000, 1000000);
+      objectTemplate.offer.type = types[randomInteger(0, types.length - 1)];
+      objectTemplate.offer.rooms = randomInteger(1, 5);
+      objectTemplate.offer.guests = randomInteger(1, 100);
+      objectTemplate.offer.checkin = times[randomInteger(0, times.length - 1)];
+      objectTemplate.offer.checkout = times[randomInteger(0, times.length - 1)];
+      objectTemplate.offer.features = getSortArr(features).slice(randomInteger(0, features.length - 1));
+      objectTemplate.offer.description = '';
+      objectTemplate.offer.photos = getSortArr(photos);
+      objectTemplate.location.x = randomInteger(0, MAP_WIDTH);
+      objectTemplate.location.y = randomInteger(MAP_HEIGHT_MIN, MAP_HEIGHT_MAX);
+      objectArray[i] = objectTemplate;
+    }
+    return objectArray;
+  }
 
   window.data = {
-    MODIFY: MODIFY,
-    ELEMENT_N: ELEMENT_N,
-    MAP_WIDTH: MAP_WIDTH,
-    MAP_HEIGHT_MIN: MAP_HEIGHT_MIN,
-    MAP_HEIGHT_MAX: MAP_HEIGHT_MAX,
-    PIN_WIDTH: PIN_WIDTH,
-    PIN_HEIGTH: PIN_HEIGTH,
-    CARD_IMG_WIDTH: CARD_IMG_WIDTH,
-    CARD_IMG_HEIGTH: CARD_IMG_HEIGTH,
-    MAX_PRICE: MAX_PRICE,
-
-    titles: titles,
-    types: types,
-    times: times,
-    features: features,
-    photos: photos,
-    renderedPins: renderedPins,
-
-    TypeMap: TypeMap,
-    PriceMap: PriceMap,
-    OptionMapping: OptionMapping,
-
-    valid: valid,
-    currentCard: currentCard,
-    defaultCoords: defaultCoords,
-    error: error,
-    pinsContainer: pinsContainer,
-    mapPinTemplate: mapPinTemplate,
-    map: map,
-    mapCardTemplate: mapCardTemplate,
-    adForm: adForm,
-    fieldsetAdList: fieldsetAdList,
-    pinMain: pinMain,
-    rooms: rooms,
-    guests: guests,
-    mapFilters: mapFilters,
+    makeObject: makeObject,
   };
 })();
