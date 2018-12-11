@@ -2,7 +2,7 @@
 
 (function () {
 
-  var ELEMENT_N = 8;
+  /*var ELEMENT_N = 8;
   var MAP_WIDTH = 1150;
   var MAP_HEIGHT_MIN = 130;
   var MAP_HEIGHT_MAX = 630;
@@ -59,5 +59,5 @@
 
   window.data = {
     makeObject: makeObject,
-  };
+  };*/
 })();

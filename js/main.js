@@ -2,7 +2,6 @@
 
 (function () {
   var MODIFY = 20;
-  var ELEMENT_N = 8;
 
   var defaultCoords = null;
   var map = document.querySelector('.map');
@@ -25,7 +24,7 @@
   }
 
   function pageActivateHandler() {
-    window.add.renderPins(window.data.makeObject(ELEMENT_N));
+    queryData();
     changeAddress.coords = getAddress(pinMain, MODIFY);
     adForm.dispatchEvent(changeAddress);
     map.classList.remove('map--faded');
