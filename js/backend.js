@@ -1,18 +1,10 @@
 'use strict';
 (function () {
-
   function queryData() {
     var URL = 'https://js.dump.academy/keksobooking/data';
 
     function onLoad(data) {
-      var typeHousingObject = document.querySelector('#housing-type');
-      var resortObject = window.ads.renderPins(data);
-      var selIndex = typeHousingObject.options.selectedIndex;
-      typeHousingObject.addEventListener('change' housingTypeChooseHandler);
-      function housingTypeChooseHandler(){
-
-
-      }
+      window.ads.renderPins(data);
     }
 
     function onError(message) {
