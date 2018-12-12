@@ -30,6 +30,8 @@
   var pinMain = document.querySelector('.map__pin--main');
   var rooms = adForm.rooms;
   var guests = adForm.capacity;
+  var successTemplate = document.querySelector('#success').content.querySelector('.success');
+  var main = document.querySelector('main');
 
   function timeInChangeHandler(event) {
     event.preventDefault();
@@ -88,6 +90,11 @@
 
   function formSubmitHandler(event) {
     event.preventDefault();
+    window.backend.upLoad(new FormData(adForm), function (response) {
+      successTemplate.cloneNode(true);
+      main.appendChild(successTemplate);
+    });
+
     var errors = Array.from(adForm.querySelectorAll('.errorField'));
     valid = true;
     errors.forEach(function (item) {

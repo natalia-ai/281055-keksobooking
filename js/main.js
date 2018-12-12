@@ -24,7 +24,6 @@
   }
 
   function pageActivateHandler() {
-    queryData();
     changeAddress.coords = getAddress(pinMain, MODIFY);
     adForm.dispatchEvent(changeAddress);
     map.classList.remove('map--faded');
@@ -32,12 +31,12 @@
     fieldsetAdList.forEach(function (item) {
       item.disabled = false;
     });
-
+    window.backend.queryData();
     pinMain.removeEventListener('mouseup', pageActivateHandler);
   }
 
   function deactivatePage() {
-    window.add.removePins();
+    window.ads.removePins();
     pinMain.style.left = defaultCoords.x;
     pinMain.style.top = defaultCoords.y;
 
@@ -58,6 +57,7 @@
 
   document.addEventListener('DOMContentLoaded', function (event) {
     event.preventDefault();
+
     defaultCoords = {
       x: pinMain.style.left,
       y: pinMain.style.top

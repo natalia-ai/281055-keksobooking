@@ -39,28 +39,15 @@
 
       pin.addEventListener('click', function (event) {
         event.preventDefault();
-        pinsContainer.childNodes.forEach(function (item) {
+        pin.classList.remove('map__pin--active');//класс map__pin--active не удаляется из разметки при клике на следующую метку. Почему?
+        pin.classList.add('map__pin--active');
 
-          if (typeof (item.closest) !== 'undefined') {
-            var targetNode = item.closest('BUTTON[TYPE = "BUTTON"]');
-            if (targetNode !== null) {
-              targetNode.classList.remove('map__pin--active');
-            }
-          }
-        });
-        event.target.closest('BUTTON[TYPE = "BUTTON"]').classList.add('map__pin--active');
         showPopUp(item);
       });
-      pin.addEventListener('keydown', function (event) {
-        event.preventDefault();
-        if (event.keyCode === 27) {
-          closePopUp();
-        }
-        renderedPins.push(pin);
-        fragment.appendChild(pin);
-      });
+
+      renderedPins.push(pin);
+      fragment.appendChild(pin);
     });
-    console.log(pinsContainer);
     pinsContainer.appendChild(fragment);
   }
 
@@ -160,10 +147,17 @@
       event.preventDefault();
       closePopUp();
     });
+
     return cardTemplate;
   }
 
-  window.add = {
+  map.addEventListener('keydown', function (event) {
+    event.preventDefault();
+    if (event.keyCode === 27) {
+      closePopUp();
+    }
+  });// срабатывает на пине, выделенном кликом мыши, таб не работает. При клике мышью на следующий пин - ошибка на 67 строке.
+  window.ads = {
     renderPins: renderPins,
     removePins: removePins,
   };

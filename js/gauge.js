@@ -50,7 +50,6 @@
       pinMain.removeEventListener('mouseup', mouseUpHandler);
       window.main.changeAddress.coords = window.main.getAddress(pinMain, MODIFY);
       adForm.dispatchEvent(window.main.changeAddress);
-      queryData();
     }
     return false;
   }
