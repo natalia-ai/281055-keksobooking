@@ -5,6 +5,7 @@
   var PIN_HEIGTH = 70;
   var CARD_IMG_WIDTH = 45;
   var CARD_IMG_HEIGTH = 40;
+  var ESC_KEYCODE = 27;
 
   var TypeMap = {
     'palace': 'Дворец',
@@ -13,6 +14,8 @@
     'bungalo': 'Бунгало',
   };
 
+  var cardTemplate = null;
+  var pinActive = null;
   var currentCard = null;
   var renderedPins = [];
   var pinsContainer = document.querySelector('.map__pins');
@@ -39,10 +42,13 @@
 
       pin.addEventListener('click', function (event) {
         event.preventDefault();
-        pin.classList.remove('map__pin--active');//класс map__pin--active не удаляется из разметки при клике на следующую метку. Почему?
-        pin.classList.add('map__pin--active');
-
         showPopUp(item);
+
+        if (pinActive) {
+          pinActive.classList.remove('map__pin--active');
+        }
+        pin.classList.add('map__pin--active');
+        pinActive = pin;
       });
 
       renderedPins.push(pin);
@@ -61,11 +67,13 @@
     }
     currentCard = card;
     map.insertBefore(card, map.lastElementChild);
+    document.addEventListener('keydown', escPressHandler);
   }
 
   function closePopUp() {
     currentCard.remove();
     currentCard = null;
+    document.removeEventListener('keydown', escPressHandler);
   }
 
   function removePins() {
@@ -76,41 +84,66 @@
   }
 
   function createCard(card) {
-    var cardTemplate = mapCardTemplate.cloneNode(true);
-    if (card.author.avatar !== null) {
+    cardTemplate = mapCardTemplate.cloneNode(true);
+    if (card.author.avatar) { //card.autor && добавляем в условие, то добавляется класс visually-hidden
       cardTemplate.querySelector('.popup__avatar').src = card.author.avatar;
+    } else {
+      cardTemplate.querySelector('.popup__avatar').classList.add('visually-hidden');
     }
-    if (card.offer.title !== null) {
+    if (card.offer && card.offer.title) {
       cardTemplate.querySelector('.popup__title').textContent = card.offer.title;
     } else {
-      cardTemplate.querySelector('.popup__title').textContent.style.display = 'none';
+      cardTemplate.querySelector('.popup__title').classList.add('visually-hidden');
     }
-    if (card.offer.address !== null) {
+    if (card.offer && card.offer.address) {
       cardTemplate.querySelector('.popup__text--address').textContent = card.offer.address;
     } else {
-      cardTemplate.querySelector('.popup__text--address').textContent.style.display = 'none';
+      cardTemplate.querySelector('.popup__text--address').classList.add('visually-hidden');
     }
-
-    if (card.offer.price !== null) {
+    if (card.offer && card.offer.price) {
       cardTemplate.querySelector('.popup__text--price').textContent = card.offer.price + ' ₽/ночь';
+    } else {
+      cardTemplate.querySelector('.popup__text--price').classList.add('visually-hidden');
     }
-    if (TypeMap[card.offer.type] !== null) {
+    if (TypeMap[card.offer.type]) {
       cardTemplate.querySelector('.popup__type').textContent = TypeMap[card.offer.type];
+    } else {
+      cardTemplate.querySelector('.popup__type').classList.add('visually-hidden');
     }
-    if ((card.offer.rooms !== null) && (card.offer.guests !== null)) {
+    if ((card.offer && card.offer.rooms) && (card.offer && card.offer.guests)) { //для небольшой лавочки тэг р с содержимым скрывается
+      //в 'visually-hidden', а д.б. строка: 2 комнаты для 3 гостей
       cardTemplate.querySelector('.popup__text--capacity').textContent = card.offer.rooms + ' комнаты для ' + card.offer.guests + ' гостей';
     } else {
-      cardTemplate.querySelector('.popup__text--capacity').textContent.style.display = 'none';
+      cardTemplate.querySelector('.popup__text--capacity').classList.add('visually-hidden');
     }
 
-    if (card.offer.checkin !== null && card.offer.checkout !== null) {
+    if ((card.offer && card.offer.checkin) && (card.offer && card.offer.checkout)) {
       cardTemplate.querySelector('.popup__text--time').textContent = 'Заезд после ' + card.offer.checkin + ' выезд до ' + card.offer.checkout;
     } else {
-      cardTemplate.querySelector('.popup__text--time').textContent.style.display = 'none';
+      cardTemplate.querySelector('.popup__text--time').classList.add('visually-hidden');
     }
 
-    if ((card.offer.features !== null) && (card.offer.features.length > 0)) {
-      var featuresCard = cardTemplate.querySelector('.popup__features');
+    addFeaturesCard(card);
+
+    if (card.offer && card.offer.description) {
+      cardTemplate.querySelector('.popup__description').textContent = card.offer.description;
+    } else {
+      cardTemplate.querySelector('.popup__description').classList.add('visually-hidden');
+    }
+
+    addPhotosCard(card);
+
+    cardTemplate.querySelector('.popup__close').addEventListener('click', function (event) {
+      event.preventDefault();
+      closePopUp();
+    });
+
+    return cardTemplate;
+  }
+
+  function addFeaturesCard(card) {
+    var featuresCard = cardTemplate.querySelector('.popup__features');
+    if ((card.offer && card.offer.features) && (card.offer && card.offer.features.length > 0)) {
       featuresCard.innerHTML = '';
       card.offer.features.forEach(function (item) {
         var feature = document.createElement('li');
@@ -119,16 +152,12 @@
         featuresCard.appendChild(feature);
       });
     } else {
-      cardTemplate.querySelector('.popup__features').style.display = 'none';
+      featuresCard.classList.add('visually-hidden');
     }
-    if (card.offer.description !== null) {
-      cardTemplate.querySelector('.popup__description').textContent = card.offer.description;
-    } else {
-      cardTemplate.querySelector('.popup__description').style.display = 'none';
-    }
-
-    if ((card.offer.photos !== null) && (card.offer.photos.length > 0)) {
-      var photosCard = cardTemplate.querySelector('.popup__photos');
+  }
+  function addPhotosCard(card) {
+    var photosCard = cardTemplate.querySelector('.popup__photos');
+    if ((card.offer && card.offer.photos) && (card.offer && card.offer.photos.length > 0)) {
       photosCard.innerHTML = '';
       card.offer.photos.forEach(function (item) {
         var imgTag = document.createElement('img');
@@ -140,23 +169,28 @@
         photosCard.appendChild(imgTag);
       });
     } else {
-      cardTemplate.querySelector('.popup__photos').style.display = 'none';
+      photosCard.classList.add('visually-hidden');
     }
-
-    cardTemplate.querySelector('.popup__close').addEventListener('click', function (event) {
-      event.preventDefault();
-      closePopUp();
-    });
-
-    return cardTemplate;
   }
 
-  map.addEventListener('keydown', function (event) {
-    event.preventDefault();
-    if (event.keyCode === 27) {
+  function escPressHandler(event) {
+    if (event.keyCode === ESC_KEYCODE) {
+      event.preventDefault();
       closePopUp();
     }
-  });// срабатывает на пине, выделенном кликом мыши, таб не работает. При клике мышью на следующий пин - ошибка на 67 строке.
+  }
+
+  /*var typeSelect = document.querySelector('#housing-type');
+  var select = new Select("[name='housing-type']");
+
+  function Select(container) {
+    var container = document.querySelector(container),
+    options = container.querySelectorAll(option),
+    pins = Array./*подать данные по типу жилья, цене...(options);
+    container.addEventListener('click', dataFilterHandler)
+}*/
+
+
   window.ads = {
     renderPins: renderPins,
     removePins: removePins,

@@ -90,10 +90,6 @@
 
   function formSubmitHandler(event) {
     event.preventDefault();
-    window.backend.upLoad(new FormData(adForm), function (response) {
-      successTemplate.cloneNode(true);
-      main.appendChild(successTemplate);
-    });
 
     var errors = Array.from(adForm.querySelectorAll('.errorField'));
     valid = true;
@@ -120,6 +116,10 @@
     }
     if (valid) {
       adForm.submit();
+      window.backend.upLoad(new FormData(adForm), function (response) {
+        successTemplate.cloneNode(true);
+        main.appendChild(successTemplate);
+      });
     }
   }
 
