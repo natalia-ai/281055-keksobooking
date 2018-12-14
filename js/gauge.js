@@ -7,8 +7,10 @@
   var BOTTOM_LINE = 205;
 
   var map = document.querySelector('.map');
-  var adForm = document.querySelector('.ad-form');
   var pinMain = document.querySelector('.map__pin--main');
+  var adForm = document.querySelector('.ad-form');
+  var changeAddress = new Event('changeAddress', {bubbles: true, cancelable: true});
+
   function mouseDownHandler(event) {
     event.preventDefault();
     var pinMainCoords = getCoords(pinMain);
@@ -49,8 +51,8 @@
       upEvent.preventDefault();
       pinMain.removeEventListener('mousemove', mouseMoveHandler);
       pinMain.removeEventListener('mouseup', mouseUpHandler);
-      window.utilites.changeAddress.coords = window.utilites.getAddress(pinMain, MODIFY);
-      adForm.dispatchEvent(window.utilites.changeAddress);
+      changeAddress.coords = window.utilites.getAddress(pinMain, MODIFY);
+      adForm.dispatchEvent(changeAddress);
     }
     return false;
   }

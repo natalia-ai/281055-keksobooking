@@ -25,14 +25,16 @@
     100: [0],
   };
 
+  var cbHandler = null;
   var main = document.querySelector('main');
   var valid = true;
   var adForm = document.querySelector('.ad-form');
   var successTemplate = document.querySelector('#success').content.querySelector('.success');
   var errorTemplate = document.querySelector('#error').content.querySelector('.error');
   var errorButton = errorTemplate.querySelector('.error__button');
-  var pinMain = document.querySelector('.map__pin--main');
-  var defaultCoords = null;
+  var rooms = adForm.rooms;
+  var guests = adForm.capacity;
+  var fieldsetAdList = Array.from(adForm.querySelectorAll('fieldset'));
 
   function timeInChangeHandler(event) {
     event.preventDefault();
@@ -116,20 +118,20 @@
       valid = false;
     }
     if (valid) {
-      window.backend.upLoad(new FormData(adForm), function (response) {
+      window.backend.upLoad(new FormData(adForm), function () {
         successTemplate.cloneNode(true);
         main.appendChild(successTemplate);
         document.addEventListener('keydown', escPressHandler);
         document.addEventListener('click', messageCloseHandler);
-        //добавить переход в изначальное неактивное состояние
+        cbHandler();
       },
-        function (err) {
-          errorTemplate.cloneNode(true);
-          main.appendChild(errorTemplate);
-          errorButton.addEventListener('submit', messageCloseHandler);
-          document.addEventListener('keydown', escPressHandler);
-          document.addEventListener('click', messageCloseHandler);
-        });
+      function () {
+        errorTemplate.cloneNode(true);
+        main.appendChild(errorTemplate);
+        errorButton.addEventListener('submit', messageCloseHandler);
+        document.addEventListener('keydown', escPressHandler);
+        document.addEventListener('click', messageCloseHandler);
+      });
     }
   }
 
@@ -147,11 +149,40 @@
     errorButton.removeEventListener('submit', messageCloseHandler);
   }
 
+  function formSetHandlers(handler) {
+    cbHandler = handler;
+    adForm.addEventListener('reset', function () {
+      cbHandler();
+    });
+  }
+
+  var syncRoomsWithGuestHandler = roomsAndGuestBindHandler(rooms, guests);
+  function activateForm() {
+    adForm.timeout.addEventListener('change', timeOutChangeHandler);
+    adForm.timein.addEventListener('change', timeInChangeHandler);
+    adForm.addEventListener('submit', formSubmitHandler);
+    rooms.addEventListener('change', syncRoomsWithGuestHandler);
+    adForm.classList.remove('ad-form--disabled');
+    syncRoomsWithGuestHandler();
+    fieldsetAdList.forEach(function (item) {
+      item.disabled = false;
+    });
+  }
+
+  function deactivateForm() {
+    adForm.timeout.removeEventListener('change', timeOutChangeHandler);
+    adForm.timein.removeEventListener('change', timeInChangeHandler);
+    adForm.removeEventListener('submit', formSubmitHandler);
+    rooms.removeEventListener('change', syncRoomsWithGuestHandler);
+    adForm.classList.add('ad-form--disabled');
+    fieldsetAdList.forEach(function (item) {
+      item.disabled = true;
+    });
+  }
   window.form = {
-    timeOutChangeHandler: timeOutChangeHandler,
-    timeInChangeHandler: timeInChangeHandler,
-    formSubmitHandler: formSubmitHandler,
-    roomsAndGuestBindHandler: roomsAndGuestBindHandler,
+    setHandlers: formSetHandlers,
+    activate: activateForm,
+    deActivate: deactivateForm,
   };
 
 })();

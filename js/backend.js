@@ -7,8 +7,7 @@
     function onLoad(data) {
       window.data.set(data);
     }
-    function onError(message) {
-      console.error(message);
+    function onError() {
     }
     var xhr = new XMLHttpRequest();
 

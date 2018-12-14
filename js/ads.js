@@ -66,13 +66,13 @@
     }
     currentCard = card;
     map.insertBefore(card, map.lastElementChild);
-    document.addEventListener('keydown', window.utilites.escPressHandler);
+    document.addEventListener('keydown', window.utilites.escPress(closePopUp));
   }
 
   function closePopUp() {
     currentCard.remove();
     currentCard = null;
-    document.removeEventListener('keydown', window.utilites.escPressHandler);
+    document.removeEventListener('keydown', window.utilites.escPress(closePopUp));
   }
 
   function removePins() {
