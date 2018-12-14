@@ -48,8 +48,8 @@
       upEvent.preventDefault();
       pinMain.removeEventListener('mousemove', mouseMoveHandler);
       pinMain.removeEventListener('mouseup', mouseUpHandler);
-      window.main.changeAddress.coords = window.main.getAddress(pinMain, MODIFY);
-      adForm.dispatchEvent(window.main.changeAddress);
+      window.utilites.changeAddress.coords = window.utilites.getAddress(pinMain, MODIFY);
+      adForm.dispatchEvent(window.utilites.changeAddress);
     }
     return false;
   }

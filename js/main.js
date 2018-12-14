@@ -8,31 +8,25 @@
   var adForm = document.querySelector('.ad-form');
   var fieldsetAdList = Array.from(adForm.querySelectorAll('fieldset'));
   var pinMain = document.querySelector('.map__pin--main');
-  var changeAddress = new Event('changeAddress', {bubbles: true, cancelable: true});
-
-  var getAddress = function (label, modify) {
-    var x = label.offsetLeft + label.offsetWidth / 2;
-    var y = modify ? label.offsetTop + label.offsetHeight + modify : label.offsetTop + label.offsetHeight / 2;
-    return {
-      x: x,
-      y: y
-    };
-  };
-
-  function addressSetHandler(event) {
-    adForm.address.value = event.coords.x + ', ' + event.coords.y;
-  }
+  var rooms = adForm.rooms;
+  var guests = adForm.capacity;
 
   function pageActivateHandler() {
-    changeAddress.coords = getAddress(pinMain, MODIFY);
-    adForm.dispatchEvent(changeAddress);
+    window.utilites.changeAddress.coords = window.utilites.getAddress(pinMain, MODIFY);
+    adForm.dispatchEvent(window.utilites.changeAddress);
     map.classList.remove('map--faded');
     adForm.classList.remove('ad-form--disabled');
     fieldsetAdList.forEach(function (item) {
       item.disabled = false;
     });
     window.backend.queryData();
+    //window.ads.renderPins(window.data.get());
     pinMain.removeEventListener('mouseup', pageActivateHandler);
+    adForm.timeout.addEventListener('change', window.form.timeOutChangeHandler);
+    adForm.timein.addEventListener('change', window.form.timeInChangeHandler);
+    adForm.addEventListener('submit', window.form.formSubmitHandler);
+    rooms.addEventListener('change', window.form.roomsAndGuestBindHandler(rooms, guests));
+    window.form.roomsAndGuestBindHandler(rooms, guests)();
   }
 
   function deactivatePage() {
@@ -41,8 +35,8 @@
     pinMain.style.top = defaultCoords.y;
 
     setTimeout(function () {
-      changeAddress.coords = getAddress(pinMain);
-      adForm.dispatchEvent(changeAddress);
+      window.utilites.changeAddress.coords = window.utilites.getAddress(pinMain);
+      adForm.dispatchEvent(window.utilites.changeAddress);
     }, 200);
 
     map.classList.add('map--faded');
@@ -52,25 +46,28 @@
     });
 
     pinMain.addEventListener('mouseup', pageActivateHandler);
+    adForm.timeout.addEventListener('change', window.form.timeOutChangeHandler);
+    adForm.timein.addEventListener('change', window.form.timeInChangeHandler);
+    adForm.addEventListener('submit', window.form.formSubmitHandler);
     pinMain.addEventListener('mousedown', window.gauge.mouseDownHandler);
   }
 
   document.addEventListener('DOMContentLoaded', function (event) {
     event.preventDefault();
-
     defaultCoords = {
       x: pinMain.style.left,
       y: pinMain.style.top
     };
     adForm.address.readOnly = true;
-    adForm.addEventListener('changeAddress', addressSetHandler);
+    adForm.addEventListener('changeAddress', window.utilites.addressSetHandler);
     adForm.addEventListener('reset', function () {
       deactivatePage();
     });
     deactivatePage();
   });
+
   window.main = {
-    changeAddress: changeAddress,
-    getAddress: getAddress,
+    deactivatePage: deactivatePage,
   };
+
 })();

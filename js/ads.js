@@ -5,7 +5,6 @@
   var PIN_HEIGTH = 70;
   var CARD_IMG_WIDTH = 45;
   var CARD_IMG_HEIGTH = 40;
-  var ESC_KEYCODE = 27;
 
   var TypeMap = {
     'palace': 'Дворец',
@@ -67,13 +66,13 @@
     }
     currentCard = card;
     map.insertBefore(card, map.lastElementChild);
-    document.addEventListener('keydown', escPressHandler);
+    document.addEventListener('keydown', window.utilites.escPressHandler);
   }
 
   function closePopUp() {
     currentCard.remove();
     currentCard = null;
-    document.removeEventListener('keydown', escPressHandler);
+    document.removeEventListener('keydown', window.utilites.escPressHandler);
   }
 
   function removePins() {
@@ -85,7 +84,7 @@
 
   function createCard(card) {
     cardTemplate = mapCardTemplate.cloneNode(true);
-    if (card.author.avatar) { //card.autor && добавляем в условие, то добавляется класс visually-hidden
+    if (card.author && card.author.avatar) {
       cardTemplate.querySelector('.popup__avatar').src = card.author.avatar;
     } else {
       cardTemplate.querySelector('.popup__avatar').classList.add('visually-hidden');
@@ -110,8 +109,7 @@
     } else {
       cardTemplate.querySelector('.popup__type').classList.add('visually-hidden');
     }
-    if ((card.offer && card.offer.rooms) && (card.offer && card.offer.guests)) { //для небольшой лавочки тэг р с содержимым скрывается
-      //в 'visually-hidden', а д.б. строка: 2 комнаты для 3 гостей
+    if ('rooms' in card.offer && 'guests' in card.offer) {
       cardTemplate.querySelector('.popup__text--capacity').textContent = card.offer.rooms + ' комнаты для ' + card.offer.guests + ' гостей';
     } else {
       cardTemplate.querySelector('.popup__text--capacity').classList.add('visually-hidden');
@@ -143,7 +141,7 @@
 
   function addFeaturesCard(card) {
     var featuresCard = cardTemplate.querySelector('.popup__features');
-    if ((card.offer && card.offer.features) && (card.offer && card.offer.features.length > 0)) {
+    if (('features' in card.offer) && (card.offer && card.offer.features.length > 0)) {
       featuresCard.innerHTML = '';
       card.offer.features.forEach(function (item) {
         var feature = document.createElement('li');
@@ -157,7 +155,7 @@
   }
   function addPhotosCard(card) {
     var photosCard = cardTemplate.querySelector('.popup__photos');
-    if ((card.offer && card.offer.photos) && (card.offer && card.offer.photos.length > 0)) {
+    if (('photos' in card.offer) && (card.offer && card.offer.photos.length > 0)) {
       photosCard.innerHTML = '';
       card.offer.photos.forEach(function (item) {
         var imgTag = document.createElement('img');
@@ -173,27 +171,10 @@
     }
   }
 
-  function escPressHandler(event) {
-    if (event.keyCode === ESC_KEYCODE) {
-      event.preventDefault();
-      closePopUp();
-    }
-  }
-
-  /*var typeSelect = document.querySelector('#housing-type');
-  var select = new Select("[name='housing-type']");
-
-  function Select(container) {
-    var container = document.querySelector(container),
-    options = container.querySelectorAll(option),
-    pins = Array./*подать данные по типу жилья, цене...(options);
-    container.addEventListener('click', dataFilterHandler)
-}*/
-
-
   window.ads = {
     renderPins: renderPins,
     removePins: removePins,
+    closePopUp: closePopUp,
   };
 
 })();

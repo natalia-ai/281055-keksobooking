@@ -25,13 +25,14 @@
     100: [0],
   };
 
+  var main = document.querySelector('main');
   var valid = true;
   var adForm = document.querySelector('.ad-form');
-  var pinMain = document.querySelector('.map__pin--main');
-  var rooms = adForm.rooms;
-  var guests = adForm.capacity;
   var successTemplate = document.querySelector('#success').content.querySelector('.success');
-  var main = document.querySelector('main');
+  var errorTemplate = document.querySelector('#error').content.querySelector('.error');
+  var errorButton = errorTemplate.querySelector('.error__button');
+  var pinMain = document.querySelector('.map__pin--main');
+  var defaultCoords = null;
 
   function timeInChangeHandler(event) {
     event.preventDefault();
@@ -115,35 +116,55 @@
       valid = false;
     }
     if (valid) {
-      adForm.submit();
       window.backend.upLoad(new FormData(adForm), function (response) {
         successTemplate.cloneNode(true);
         main.appendChild(successTemplate);
-      });
+        document.addEventListener('keydown', escPressHandler);
+        document.addEventListener('click', messageCloseHandler);
+        //добавить переход в изначальное неактивное состояние
+        document.addEventListener('DOMContentLoaded', function (event) {
+          event.preventDefault();
+          defaultCoords = {
+            x: pinMain.style.left,
+            y: pinMain.style.top
+          };
+          adForm.address.readOnly = true;
+          adForm.addEventListener('changeAddress', window.utilites.addressSetHandler);
+          adForm.addEventListener('reset', function () {
+            window.main.deactivatePage();
+          });
+          window.main.deactivatePage();
+        });
+      },
+        function (err) {
+          errorTemplate.cloneNode(true);
+          main.appendChild(errorTemplate);
+          errorButton.addEventListener('submit', messageCloseHandler);
+          document.addEventListener('keydown', escPressHandler);
+          document.addEventListener('click', messageCloseHandler);
+        });
     }
   }
 
-  function pageActivateHandler() {
-    pinMain.removeEventListener('mouseup', pageActivateHandler);
-    adForm.timeout.addEventListener('change', timeOutChangeHandler);
-    adForm.timein.addEventListener('change', timeInChangeHandler);
-    adForm.addEventListener('submit', formSubmitHandler);
-    rooms.addEventListener('change', roomsAndGuestBindHandler(rooms, guests));
-    roomsAndGuestBindHandler(rooms, guests)();
-  }
-
-  function deactivatePage() {
-    pinMain.addEventListener('mouseup', pageActivateHandler);
-    adForm.timeout.addEventListener('change', timeOutChangeHandler);
-    adForm.timein.addEventListener('change', timeInChangeHandler);
-    adForm.addEventListener('submit', formSubmitHandler);
-  }
-
-  document.addEventListener('DOMContentLoaded', function (event) {
-    event.preventDefault();
-    adForm.addEventListener('reset', function () {
-      deactivatePage();
-    });
-    deactivatePage();
+  var escPressHandler = window.utilites.escPress(function () {
+    successTemplate.remove();
+    errorTemplate.remove();
+    document.removeEventListener('keydown', escPressHandler);
   });
+
+  function messageCloseHandler(event) {
+    event.preventDefault();
+    errorTemplate.remove();
+    successTemplate.remove();
+    document.removeEventListener('click', messageCloseHandler);
+    errorButton.removeEventListener('submit', messageCloseHandler);
+  }
+
+  window.form = {
+    timeOutChangeHandler: timeOutChangeHandler,
+    timeInChangeHandler: timeInChangeHandler,
+    formSubmitHandler: formSubmitHandler,
+    roomsAndGuestBindHandler: roomsAndGuestBindHandler,
+  };
+
 })();
