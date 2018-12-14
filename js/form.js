@@ -122,19 +122,6 @@
         document.addEventListener('keydown', escPressHandler);
         document.addEventListener('click', messageCloseHandler);
         //добавить переход в изначальное неактивное состояние
-        document.addEventListener('DOMContentLoaded', function (event) {
-          event.preventDefault();
-          defaultCoords = {
-            x: pinMain.style.left,
-            y: pinMain.style.top
-          };
-          adForm.address.readOnly = true;
-          adForm.addEventListener('changeAddress', window.utilites.addressSetHandler);
-          adForm.addEventListener('reset', function () {
-            window.main.deactivatePage();
-          });
-          window.main.deactivatePage();
-        });
       },
         function (err) {
           errorTemplate.cloneNode(true);

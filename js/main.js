@@ -19,8 +19,7 @@
     fieldsetAdList.forEach(function (item) {
       item.disabled = false;
     });
-    window.backend.queryData();
-    //window.ads.renderPins(window.data.get());
+    window.ads.renderPins(window.data.get());
     pinMain.removeEventListener('mouseup', pageActivateHandler);
     adForm.timeout.addEventListener('change', window.form.timeOutChangeHandler);
     adForm.timein.addEventListener('change', window.form.timeInChangeHandler);
@@ -64,6 +63,7 @@
       deactivatePage();
     });
     deactivatePage();
+    window.backend.queryData();
   });
 
   window.main = {

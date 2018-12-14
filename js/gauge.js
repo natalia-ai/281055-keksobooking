@@ -3,11 +3,12 @@
 (function () {
 
   var MODIFY = 20;
+  var UPPER_BOUND = 45;
+  var BOTTOM_LINE = 205;
 
   var map = document.querySelector('.map');
   var adForm = document.querySelector('.ad-form');
   var pinMain = document.querySelector('.map__pin--main');
-  var mapFilters = document.querySelector('.map__filters');
   function mouseDownHandler(event) {
     event.preventDefault();
     var pinMainCoords = getCoords(pinMain);
@@ -29,10 +30,10 @@
       }
       var rightBond = map.offsetWidth - pinMain.offsetWidth / 2;
 
-      if (newTop < 45) {
-        newTop = 45;
+      if (newTop < UPPER_BOUND) {
+        newTop = UPPER_BOUND;
       }
-      var bottomBond = map.offsetHeight - mapFilters.offsetHeight - pinMain.offsetHeight - 20;
+      var bottomBond = map.offsetHeight - BOTTOM_LINE;
 
       if (newLeft > rightBond) {
         newLeft = rightBond;

@@ -6,7 +6,6 @@
 
     function onLoad(data) {
       window.data.set(data);
-      window.ads.renderPins(data);
     }
     function onError(message) {
       console.error(message);
