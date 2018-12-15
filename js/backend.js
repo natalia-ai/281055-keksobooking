@@ -1,6 +1,5 @@
 'use strict';
 (function () {
-
   function queryData() {
     var URL = 'https://js.dump.academy/keksobooking/data';
 
@@ -52,6 +51,5 @@
     queryData: queryData,
     upLoad: upLoad,
   };
+
 })();
-
-
