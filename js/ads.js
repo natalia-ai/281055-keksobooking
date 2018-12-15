@@ -70,7 +70,9 @@
   }
 
   function closePopUp() {
-    currentCard.remove();
+    if (currentCard) {
+      currentCard.remove();
+    }
     currentCard = null;
     document.removeEventListener('keydown', window.utilites.escPress(closePopUp));
   }
@@ -171,10 +173,14 @@
     }
   }
 
+  function removeAds() {
+    closePopUp();
+    removePins();
+  }
+
   window.ads = {
     renderPins: renderPins,
-    removePins: removePins,
-    closePopUp: closePopUp,
+    remove: removeAds,
   };
 
 })();

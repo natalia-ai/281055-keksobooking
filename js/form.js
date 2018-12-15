@@ -179,6 +179,7 @@
       item.disabled = true;
     });
   }
+
   window.form = {
     setHandlers: formSetHandlers,
     activate: activateForm,
