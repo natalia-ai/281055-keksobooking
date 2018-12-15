@@ -25,11 +25,16 @@
     100: [0],
   };
 
+  var cbHandler = null;
+  var main = document.querySelector('main');
   var valid = true;
   var adForm = document.querySelector('.ad-form');
-  var pinMain = document.querySelector('.map__pin--main');
+  var successTemplate = document.querySelector('#success').content.querySelector('.success');
+  var errorTemplate = document.querySelector('#error').content.querySelector('.error');
+  var errorButton = errorTemplate.querySelector('.error__button');
   var rooms = adForm.rooms;
   var guests = adForm.capacity;
+  var fieldsetAdList = Array.from(adForm.querySelectorAll('fieldset'));
 
   function timeInChangeHandler(event) {
     event.preventDefault();
@@ -88,6 +93,7 @@
 
   function formSubmitHandler(event) {
     event.preventDefault();
+
     var errors = Array.from(adForm.querySelectorAll('.errorField'));
     valid = true;
     errors.forEach(function (item) {
@@ -112,31 +118,71 @@
       valid = false;
     }
     if (valid) {
-      adForm.submit();
+      window.backend.upLoad(new FormData(adForm), function () {
+        successTemplate.cloneNode(true);
+        main.appendChild(successTemplate);
+        document.addEventListener('keydown', escPressHandler);
+        document.addEventListener('click', messageCloseHandler);
+        cbHandler();
+      },
+      function () {
+        errorTemplate.cloneNode(true);
+        main.appendChild(errorTemplate);
+        errorButton.addEventListener('submit', messageCloseHandler);
+        document.addEventListener('keydown', escPressHandler);
+        document.addEventListener('click', messageCloseHandler);
+      });
     }
   }
 
-  function pageActivateHandler() {
-    pinMain.removeEventListener('mouseup', pageActivateHandler);
-    adForm.timeout.addEventListener('change', timeOutChangeHandler);
-    adForm.timein.addEventListener('change', timeInChangeHandler);
-    adForm.addEventListener('submit', formSubmitHandler);
-    rooms.addEventListener('change', roomsAndGuestBindHandler(rooms, guests));
-    roomsAndGuestBindHandler(rooms, guests)();
-  }
-
-  function deactivatePage() {
-    pinMain.addEventListener('mouseup', pageActivateHandler);
-    adForm.timeout.addEventListener('change', timeOutChangeHandler);
-    adForm.timein.addEventListener('change', timeInChangeHandler);
-    adForm.addEventListener('submit', formSubmitHandler);
-  }
-
-  document.addEventListener('DOMContentLoaded', function (event) {
-    event.preventDefault();
-    adForm.addEventListener('reset', function () {
-      deactivatePage();
-    });
-    deactivatePage();
+  var escPressHandler = window.utilites.escPress(function () {
+    successTemplate.remove();
+    errorTemplate.remove();
+    document.removeEventListener('keydown', escPressHandler);
   });
+
+  function messageCloseHandler(event) {
+    event.preventDefault();
+    errorTemplate.remove();
+    successTemplate.remove();
+    document.removeEventListener('click', messageCloseHandler);
+    errorButton.removeEventListener('submit', messageCloseHandler);
+  }
+
+  function formSetHandlers(handler) {
+    cbHandler = handler;
+    adForm.addEventListener('reset', function () {
+      cbHandler();
+    });
+  }
+
+  var syncRoomsWithGuestHandler = roomsAndGuestBindHandler(rooms, guests);
+  function activateForm() {
+    adForm.timeout.addEventListener('change', timeOutChangeHandler);
+    adForm.timein.addEventListener('change', timeInChangeHandler);
+    adForm.addEventListener('submit', formSubmitHandler);
+    rooms.addEventListener('change', syncRoomsWithGuestHandler);
+    adForm.classList.remove('ad-form--disabled');
+    syncRoomsWithGuestHandler();
+    fieldsetAdList.forEach(function (item) {
+      item.disabled = false;
+    });
+  }
+
+  function deactivateForm() {
+    adForm.timeout.removeEventListener('change', timeOutChangeHandler);
+    adForm.timein.removeEventListener('change', timeInChangeHandler);
+    adForm.removeEventListener('submit', formSubmitHandler);
+    rooms.removeEventListener('change', syncRoomsWithGuestHandler);
+    adForm.classList.add('ad-form--disabled');
+    fieldsetAdList.forEach(function (item) {
+      item.disabled = true;
+    });
+  }
+  window.form = {
+    setHandlers: formSetHandlers,
+    activate: activateForm,
+    deActivate: deactivateForm,
+  };
+
 })();
