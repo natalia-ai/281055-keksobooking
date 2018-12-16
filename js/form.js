@@ -178,6 +178,9 @@
     fieldsetAdList.forEach(function (item) {
       item.disabled = true;
     });
+    adForm.addEventListener('reset', function () {
+      cbHandler();
+    });
   }
   window.form = {
     setHandlers: formSetHandlers,
