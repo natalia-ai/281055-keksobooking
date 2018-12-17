@@ -6,12 +6,18 @@
   var housingRooms = mapFilters.querySelector('#housing-rooms');
   var housingGuests = mapFilters.querySelector('#housing-guests');
   var housingFeatures = mapFilters.querySelector('#housing-features');
+  //var lastTimeout = null;
 
+  mapFilters.addEventListener('change', filterPinsChangeHandler);
 
-  mapFilters.addEventListener('change', function () {
+  function filterPinsChangeHandler() {
     window.ads.removePins();
     window.ads.renderPins(filterPins());
-  });
+    /*if (lastTimeout) {
+      clearTimeout(lastTimeout);
+    }
+    lastTimeout = setTimeout(window.ads.renderPins(filterPins()), 500);*/
+  }
 
   function filterPins(data) {
     data = window.data.get();
@@ -58,11 +64,11 @@
       }
 
       if (!housingFeatures.querySelector('#filter-wifi').checked &&
-          !housingFeatures.querySelector('#filter-dishwasher').checked &&
-          !housingFeatures.querySelector('#filter-parking').checked &&
-          !housingFeatures.querySelector('#filter-washer').checked &&
-          !housingFeatures.querySelector('#filter-elevator').checked &&
-          !housingFeatures.querySelector('#filter-conditioner').checked) {
+        !housingFeatures.querySelector('#filter-dishwasher').checked &&
+        !housingFeatures.querySelector('#filter-parking').checked &&
+        !housingFeatures.querySelector('#filter-washer').checked &&
+        !housingFeatures.querySelector('#filter-elevator').checked &&
+        !housingFeatures.querySelector('#filter-conditioner').checked) {
         housingFeaturesSelected = true;
       } else {
         var features = new Set(data[i].offer.features);
