@@ -34,11 +34,13 @@
   }
 
   function renderPins(data) {
-
     var fragment = document.createDocumentFragment();
+    var counter = 0;
     data.forEach(function (item) {
+      if (counter >= 5) {
+        return;
+      }
       var pin = createPin(item);
-
       pin.addEventListener('click', function (event) {
         event.preventDefault();
         showPopUp(item);
@@ -52,6 +54,7 @@
 
       renderedPins.push(pin);
       fragment.appendChild(pin);
+      ++counter;
     });
     pinsContainer.appendChild(fragment);
   }
@@ -180,7 +183,6 @@
 
   window.ads = {
     renderPins: renderPins,
-    removePins: removePins,
     remove: removeAds,
   };
 

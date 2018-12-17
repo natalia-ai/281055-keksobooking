@@ -1,22 +1,26 @@
 'use strict';
 (function () {
+  var LOW_PRICE = 10000;
+  var HEIGHT_PRICE = 50000;
+
   var mapFilters = document.querySelector('.map__filters');
   var housingType = mapFilters.querySelector('#housing-type');
   var housingPrice = mapFilters.querySelector('#housing-price');
   var housingRooms = mapFilters.querySelector('#housing-rooms');
   var housingGuests = mapFilters.querySelector('#housing-guests');
   var housingFeatures = mapFilters.querySelector('#housing-features');
-  //var lastTimeout = null;
+  var lastTimeout;
 
   mapFilters.addEventListener('change', filterPinsChangeHandler);
 
   function filterPinsChangeHandler() {
-    window.ads.removePins();
-    window.ads.renderPins(filterPins());
-    /*if (lastTimeout) {
+    window.ads.remove();
+    if (lastTimeout) {
       clearTimeout(lastTimeout);
     }
-    lastTimeout = setTimeout(window.ads.renderPins(filterPins()), 500);*/
+    lastTimeout = setTimeout(function () {
+      window.ads.renderPins(filterPins());
+    }, 500);
   }
 
   function filterPins(data) {
@@ -36,15 +40,15 @@
       }
       switch (housingPrice.value) {
         case 'low':
-          housingPriceSelected = data[i].offer.price < 10000;
+          housingPriceSelected = data[i].offer.price < LOW_PRICE;
           break;
 
         case 'middle':
-          housingPriceSelected = data[i].offer.price >= 10000 && data[i].offer.price < 50000;
+          housingPriceSelected = data[i].offer.price >= LOW_PRICE && data[i].offer.price < HEIGHT_PRICE;
           break;
 
         case 'high':
-          housingPriceSelected = data[i].offer.price >= 50000;
+          housingPriceSelected = data[i].offer.price >= HEIGHT_PRICE;
           break;
 
         default:
