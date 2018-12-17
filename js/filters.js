@@ -56,15 +56,15 @@
           break;
       }
 
-      if (housingRooms.value === 'any') {
+      if (housingRooms.value == 'any') {
         housingRoomsSelected = true;
       } else {
-        housingRoomsSelected = data[i].offer.rooms === housingRooms.value;
+        housingRoomsSelected = data[i].offer.rooms == housingRooms.value;
       }
-      if (housingGuests.value === 'any') {
+      if (housingGuests.value == 'any') {
         housingGuestsSelected = true;
       } else {
-        housingGuestsSelected = data[i].offer.guests === housingGuests.value;
+        housingGuestsSelected = data[i].offer.guests == housingGuests.value;
       }
 
       if (!housingFeatures.querySelector('#filter-wifi').checked &&
