@@ -116,12 +116,12 @@
     return newPinsArray;
   }
   function deActivateFilters() {
-  mapFilters.removeEventListener('change', filterPinsChangeHandler);
-}
+    mapFilters.removeEventListener('change', filterPinsChangeHandler);
+  }
 
-window.filters = {
- deActivate: deActivateFilters,
- activate: activateFilters,
-}
+  window.filters = {
+    deActivate: deActivateFilters,
+    activate: activateFilters,
+  };
 
 })();
