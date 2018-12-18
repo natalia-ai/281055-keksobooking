@@ -2,6 +2,7 @@
 
 (function () {
   var MODIFY = 20;
+  var TIME = 1;
 
   var defaultCoords = null;
   var map = document.querySelector('.map');
@@ -15,6 +16,7 @@
 
   function pageActivateHandler() {
     window.form.activate();
+    window.filters.activate();
     changeAddress.coords = window.utilites.getAddress(pinMain, MODIFY);
     document.dispatchEvent(changeAddress);
     map.classList.remove('map--faded');
@@ -25,6 +27,7 @@
 
   function deactivatePage() {
     window.form.deActivate();
+    window.filters.deActivate();
     window.ads.remove();
     pinMain.style.left = defaultCoords.x;
     pinMain.style.top = defaultCoords.y;
@@ -32,7 +35,7 @@
     setTimeout(function () {
       changeAddress.coords = window.utilites.getAddress(pinMain);
       document.dispatchEvent(changeAddress);
-    }, 1);
+    }, TIME);
 
     map.classList.add('map--faded');
     pinMain.addEventListener('mouseup', pageActivateHandler);

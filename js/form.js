@@ -3,6 +3,8 @@
 (function () {
 
   var MAX_PRICE = 1000000;
+  var MIN_LENGTH = 30;
+  var MAX_LENGTH = 100;
 
   var TypeMap = {
     'palace': 'Дворец',
@@ -99,11 +101,11 @@
     errors.forEach(function (item) {
       item.remove();
     });
-    if (adForm.title.value.length < 30) {
+    if (adForm.title.value.length < MIN_LENGTH) {
       renderError(adForm.title, 'Поле не должно быть менее 30 символов');
       valid = false;
     }
-    if (adForm.title.value.length > 100) {
+    if (adForm.title.value.length > MAX_LENGTH) {
       renderError(adForm.title, 'Поле не должно превышать 100 символов');
       valid = false;
     }

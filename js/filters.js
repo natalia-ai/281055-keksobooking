@@ -2,6 +2,7 @@
 (function () {
   var LOW_PRICE = 10000;
   var HEIGHT_PRICE = 50000;
+  var TIME = 500;
 
   var mapFilters = document.querySelector('.map__filters');
   var housingType = mapFilters.querySelector('#housing-type');
@@ -11,7 +12,10 @@
   var housingFeatures = mapFilters.querySelector('#housing-features');
   var lastTimeout;
 
-  mapFilters.addEventListener('change', filterPinsChangeHandler);
+  function activateFilters() {
+    mapFilters.addEventListener('change', filterPinsChangeHandler);
+  }
+
 
   function filterPinsChangeHandler() {
     window.ads.remove();
@@ -20,7 +24,7 @@
     }
     lastTimeout = setTimeout(function () {
       window.ads.renderPins(filterPins());
-    }, 500);
+    }, TIME);
   }
 
   function checkFeature(featureList, item) {
@@ -111,5 +115,13 @@
     }
     return newPinsArray;
   }
+  function deActivateFilters() {
+  mapFilters.removeEventListener('change', filterPinsChangeHandler);
+}
+
+window.filters = {
+ deActivate: deActivateFilters,
+ activate: activateFilters,
+}
 
 })();
