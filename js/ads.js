@@ -34,11 +34,13 @@
   }
 
   function renderPins(data) {
-
     var fragment = document.createDocumentFragment();
+    var counter = 0;
     data.forEach(function (item) {
+      if (counter >= 5) {
+        return;
+      }
       var pin = createPin(item);
-
       pin.addEventListener('click', function (event) {
         event.preventDefault();
         showPopUp(item);
@@ -52,6 +54,7 @@
 
       renderedPins.push(pin);
       fragment.appendChild(pin);
+      ++counter;
     });
     pinsContainer.appendChild(fragment);
   }
@@ -70,7 +73,9 @@
   }
 
   function closePopUp() {
-    currentCard.remove();
+    if (currentCard) {
+      currentCard.remove();
+    }
     currentCard = null;
     document.removeEventListener('keydown', window.utilites.escPress(closePopUp));
   }
@@ -171,10 +176,14 @@
     }
   }
 
+  function removeAds() {
+    closePopUp();
+    removePins();
+  }
+
   window.ads = {
     renderPins: renderPins,
-    removePins: removePins,
-    closePopUp: closePopUp,
+    remove: removeAds,
   };
 
 })();

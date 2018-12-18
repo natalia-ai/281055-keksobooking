@@ -4,11 +4,10 @@
 
   var MODIFY = 20;
   var UPPER_BOUND = 45;
-  var BOTTOM_LINE = 205;
 
-  var map = document.querySelector('.map');
   var pinMain = document.querySelector('.map__pin--main');
   var adForm = document.querySelector('.ad-form');
+  var mapFiltersContainer = document.querySelector('.map__filters-container');
   var changeAddress = new Event('changeAddress', {bubbles: true, cancelable: true});
 
   function mouseDownHandler(event) {
@@ -18,24 +17,24 @@
     var shiftY = event.clientY - pinMainCoords.top;
     pinMain.style.zIndex = 1000;
 
-    pinMain.addEventListener('mousemove', mouseMoveHandler);
-    pinMain.addEventListener('mouseup', mouseUpHandler);
+    document.addEventListener('mousemove', mouseMoveHandler);
+    document.addEventListener('mouseup', mouseUpHandler);
 
-    var mapCoords = getCoords(map);
+    var mapCoords = getCoords(pinMain.offsetParent);
     function mouseMoveHandler(moveEvent) {
       moveEvent.preventDefault();
       var newLeft = moveEvent.clientX - shiftX - mapCoords.left;
       var newTop = moveEvent.clientY - shiftY - mapCoords.top;
 
-      if (newLeft < (-pinMain.offsetWidth / 2)) {
-        newLeft = (-pinMain.offsetWidth / 2);
+      if (newLeft < (pinMain.offsetWidth / -2)) {
+        newLeft = (pinMain.offsetWidth / -2);
       }
-      var rightBond = map.offsetWidth - pinMain.offsetWidth / 2;
+      var rightBond = Math.round(pinMain.offsetParent.offsetWidth - pinMain.offsetWidth / 2);
 
       if (newTop < UPPER_BOUND) {
         newTop = UPPER_BOUND;
       }
-      var bottomBond = map.offsetHeight - BOTTOM_LINE;
+      var bottomBond = pinMain.offsetParent.offsetHeight - mapFiltersContainer.offsetHeight - pinMain.offsetHeight;
 
       if (newLeft > rightBond) {
         newLeft = rightBond;
@@ -49,12 +48,11 @@
     }
     function mouseUpHandler(upEvent) {
       upEvent.preventDefault();
-      pinMain.removeEventListener('mousemove', mouseMoveHandler);
-      pinMain.removeEventListener('mouseup', mouseUpHandler);
+      document.removeEventListener('mousemove', mouseMoveHandler);
+      document.removeEventListener('mouseup', mouseUpHandler);
       changeAddress.coords = window.utilites.getAddress(pinMain, MODIFY);
       adForm.dispatchEvent(changeAddress);
     }
-    return false;
   }
 
   function getCoords(elem) {
