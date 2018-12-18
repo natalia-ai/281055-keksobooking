@@ -16,10 +16,11 @@
     washer: false,
     elevator: false,
     conditioner: false,
-    feature: []
+    features: []
   };
 
   function initFilters(data, elem, callback) {
+    data = window.data.get();
     function filtrate(field, item) {
       var result = true;
 
@@ -74,7 +75,7 @@
       }
       data.forEach(function (item) {
         if (selectCriteria.features.length > 0) {
-          var checkFeatures = window.ads.renderPins.checkEntry(item.offer.features, selectCriteria.features);
+          var checkFeatures =utilites.checkEntry(item.offer.features, selectCriteria.features);
           if (checkFeatures) {
             newData.push(item);
           }
@@ -83,10 +84,10 @@
         }
       });
 
-      newData = newData.filters(function (item) {
+      newData = newData.filter(function (item) {
         return filtrate('type', item) && filtrate('guests', item) && filtrate('rooms', item) && filtratePrice(item);
       });
-      callback(newData);
+      window.ads.renderPins(newData);
     });
   }
   window.filters = {
