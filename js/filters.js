@@ -118,7 +118,6 @@
   function deActivateFilters() {
     mapFilters.removeEventListener('change', filterPinsChangeHandler);
     }
-
   window.filters = {
     deActivate: deActivateFilters,
     activate: activateFilters,
