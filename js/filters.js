@@ -75,11 +75,12 @@
           housingFeaturesSelected = housingFeaturesSelected || node.checked && checkFeature(data[i].offer.features, node.value);
         }
       });
+
       housingFeaturesSelected = allHousingFeaturesUnchecked || housingFeaturesSelected;
-      
+
       if (housingTypeSelected && housingPriceSelected && housingRoomsSelected && housingGuestsSelected && housingFeaturesSelected) {
         newPinsArray.push(data[i]);
-      } 
+      }
     }
     return newPinsArray;
   }

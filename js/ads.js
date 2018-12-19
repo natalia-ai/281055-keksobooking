@@ -93,7 +93,7 @@
     } else {
       elem.classList.add('visually-hidden');
     }
-  } 
+  }
 
   function createCard(card) {
     cardTemplate = mapCardTemplate.cloneNode(true);
