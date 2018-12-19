@@ -2,7 +2,7 @@
 
 (function () {
 
-  var MODIFY = 20;
+  var MODIFY_GAUGE = 20;
   var UPPER_BOUND = 45;
 
   var pinMain = document.querySelector('.map__pin--main');
@@ -50,7 +50,7 @@
       upEvent.preventDefault();
       document.removeEventListener('mousemove', mouseMoveHandler);
       document.removeEventListener('mouseup', mouseUpHandler);
-      changeAddress.coords = window.utilites.getAddress(pinMain, MODIFY);
+      changeAddress.coords = window.utilites.getAddress(pinMain, MODIFY_GAUGE);
       adForm.dispatchEvent(changeAddress);
     }
   }

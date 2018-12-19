@@ -158,14 +158,14 @@
     });
   }
 
-  var syncRoomsWithGuestHandler = roomsAndGuestBindHandler(rooms, guests);
+  var roomsWithGuestsSyncHandler = roomsAndGuestBindHandler(rooms, guests);
   function activateForm() {
     adForm.timeout.addEventListener('change', timeOutChangeHandler);
     adForm.timein.addEventListener('change', timeInChangeHandler);
     adForm.addEventListener('submit', formSubmitHandler);
-    rooms.addEventListener('change', syncRoomsWithGuestHandler);
+    rooms.addEventListener('change', roomsWithGuestsSyncHandler);
     adForm.classList.remove('ad-form--disabled');
-    syncRoomsWithGuestHandler();
+    roomsWithGuestsSyncHandler();
     fieldsetAdList.forEach(function (item) {
       item.disabled = false;
     });
@@ -175,7 +175,7 @@
     adForm.timeout.removeEventListener('change', timeOutChangeHandler);
     adForm.timein.removeEventListener('change', timeInChangeHandler);
     adForm.removeEventListener('submit', formSubmitHandler);
-    rooms.removeEventListener('change', syncRoomsWithGuestHandler);
+    rooms.removeEventListener('change', roomsWithGuestsSyncHandler);
     adForm.classList.add('ad-form--disabled');
     fieldsetAdList.forEach(function (item) {
       item.disabled = true;

@@ -21,7 +21,6 @@
     document.dispatchEvent(changeAddress);
     map.classList.remove('map--faded');
     window.ads.renderPins(window.data.get());
-    window.filters.initFilters();
     pinMain.removeEventListener('mouseup', pageActivateHandler);
   }
 
