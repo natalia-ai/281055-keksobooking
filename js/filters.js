@@ -1,3 +1,4 @@
+
 'use strict';
 (function () {
   var LOW_PRICE = 10000;
@@ -15,7 +16,6 @@
   function activateFilters() {
     mapFilters.addEventListener('change', filterPinsChangeHandler);
   }
-
 
   function filterPinsChangeHandler() {
     window.ads.remove();
@@ -40,17 +40,13 @@
     data = window.data.get();
     var newPinsArray = [];
     for (var i = 0; (i < data.length) && (newPinsArray.length < 5); i++) {
-      var housingTypeSelected = false;
+      var housingTypeSelected = true;
       var housingPriceSelected = false;
       var housingRoomsSelected = false;
       var housingGuestsSelected = false;
-      var housingFeaturesSelected = true;
+      var housingFeaturesSelected = false;
+      var allHousingFeaturesUnchecked = true;
 
-      if (housingType.value === 'any') {
-        housingTypeSelected = true;
-      } else {
-        housingTypeSelected = data[i].offer.type === housingType.value;
-      }
       switch (housingPrice.value) {
         case 'low':
           housingPriceSelected = data[i].offer.price < LOW_PRICE;
@@ -69,46 +65,19 @@
           break;
       }
 
-      if (housingRooms.value === 'any') {
-        housingRoomsSelected = true;
-      } else {
-        housingRoomsSelected = parseInt(data[i].offer.rooms, 10) === parseInt(housingRooms.value, 10);
-      }
-      if (housingGuests.value === 'any') {
-        housingGuestsSelected = true;
-      } else {
-        housingGuestsSelected = parseInt(data[i].offer.guests, 10) === parseInt(housingGuests.value, 10);
-      }
+      housingTypeSelected = housingType.value === 'any' || data[i].offer.type === housingType.value;
+      housingRoomsSelected = housingRooms.value === 'any' || parseInt(data[i].offer.rooms, 10) === parseInt(housingRooms.value, 10);
+      housingGuestsSelected = housingGuests.value === 'any' || parseInt(data[i].offer.guests, 10) === parseInt(housingGuests.value, 10);
 
-      if (!housingFeatures.querySelector('#filter-wifi').checked &&
-        !housingFeatures.querySelector('#filter-dishwasher').checked &&
-        !housingFeatures.querySelector('#filter-parking').checked &&
-        !housingFeatures.querySelector('#filter-washer').checked &&
-        !housingFeatures.querySelector('#filter-elevator').checked &&
-        !housingFeatures.querySelector('#filter-conditioner').checked) {
-        housingFeaturesSelected = true;
-      } else {
-        var features = data[i].offer.features;
-        housingFeaturesSelected = true;
-        if (housingFeatures.querySelector('#filter-wifi').checked) {
-          housingFeaturesSelected = housingFeaturesSelected && checkFeature(features, 'wifi');
+      housingFeatures.childNodes.forEach(function (node) {
+        if ((node.nodeName === 'INPUT') && (node.name === 'features')) {
+          allHousingFeaturesUnchecked = allHousingFeaturesUnchecked && !node.checked;
+          housingFeaturesSelected = housingFeaturesSelected || node.checked && checkFeature(data[i].offer.features, node.value);
         }
-        if (housingFeatures.querySelector('#filter-dishwasher').checked) {
-          housingFeaturesSelected = housingFeaturesSelected && checkFeature(features, 'dishwasher');
-        }
-        if (housingFeatures.querySelector('#filter-parking').checked) {
-          housingFeaturesSelected = housingFeaturesSelected && checkFeature(features, 'parking');
-        }
-        if (housingFeatures.querySelector('#filter-washer').checked) {
-          housingFeaturesSelected = housingFeaturesSelected && checkFeature(features, 'washer');
-        }
-        if (housingFeatures.querySelector('#filter-elevator').checked) {
-          housingFeaturesSelected = housingFeaturesSelected && checkFeature(features, 'elevator');
-        }
-        if (housingFeatures.querySelector('#filter-conditioner').checked) {
-          housingFeaturesSelected = housingFeaturesSelected && checkFeature(features, 'conditioner');
-        }
-      }
+      });
+
+      housingFeaturesSelected = allHousingFeaturesUnchecked || housingFeaturesSelected;
+
       if (housingTypeSelected && housingPriceSelected && housingRoomsSelected && housingGuestsSelected && housingFeaturesSelected) {
         newPinsArray.push(data[i]);
       }
