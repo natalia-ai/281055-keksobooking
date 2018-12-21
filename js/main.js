@@ -27,6 +27,7 @@
   function deactivatePage() {
     window.form.deActivate();
     window.filters.deActivate();
+    window.photos.deActivate();
     window.ads.remove();
     pinMain.style.left = defaultCoords.x;
     pinMain.style.top = defaultCoords.y;
